@@ -1,0 +1,6 @@
+E:\Projects\it.carlo\StripeGateway\StripeGateway\bin\Debug\StripeGateway.dll
+E:\Projects\it.carlo\StripeGateway\StripeGateway\bin\Debug\StripeGateway.pdb
+E:\Projects\it.carlo\StripeGateway\StripeGateway\obj\Debug\StripeGateway.csprojAssemblyReference.cache
+E:\Projects\it.carlo\StripeGateway\StripeGateway\obj\Debug\StripeGateway.csproj.CoreCompileInputs.cache
+E:\Projects\it.carlo\StripeGateway\StripeGateway\obj\Debug\StripeGateway.dll
+E:\Projects\it.carlo\StripeGateway\StripeGateway\obj\Debug\StripeGateway.pdb

@@ -1,0 +1,12 @@
+E:\Projects\it.carlo\StripeGateway\StripeGateway\bin\Release\StripeGateway.dll
+E:\Projects\it.carlo\StripeGateway\StripeGateway\bin\Release\StripeGateway.pdb
+E:\Projects\it.carlo\StripeGateway\StripeGateway\bin\Release\Newtonsoft.Json.dll
+E:\Projects\it.carlo\StripeGateway\StripeGateway\bin\Release\Stripe.net.dll
+E:\Projects\it.carlo\StripeGateway\StripeGateway\bin\Release\System.Runtime.InteropServices.RuntimeInformation.dll
+E:\Projects\it.carlo\StripeGateway\StripeGateway\bin\Release\Newtonsoft.Json.xml
+E:\Projects\it.carlo\StripeGateway\StripeGateway\bin\Release\Stripe.net.pdb
+E:\Projects\it.carlo\StripeGateway\StripeGateway\bin\Release\Stripe.net.xml
+E:\Projects\it.carlo\StripeGateway\StripeGateway\obj\Release\StripeGateway.csproj.CoreCompileInputs.cache
+E:\Projects\it.carlo\StripeGateway\StripeGateway\obj\Release\StripeGateway.csproj.CopyComplete
+E:\Projects\it.carlo\StripeGateway\StripeGateway\obj\Release\StripeGateway.dll
+E:\Projects\it.carlo\StripeGateway\StripeGateway\obj\Release\StripeGateway.pdb
