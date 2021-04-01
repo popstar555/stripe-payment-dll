@@ -1,12 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Stripe;
-using Payment;
+﻿using Stripe;
+using System;
 
-namespace Payment.Stripe
+namespace StripePayment
 {
     public class StripeGateway
     {
@@ -16,7 +11,7 @@ namespace Payment.Stripe
             StripeConfiguration.ApiKey = ApiKey;
         }
 
-        public bool Pay(CreditCard card, Money payout, string receiptEmail="", string description="")
+        public bool Pay(StripeCard card, Money payout, string receiptEmail="", string description="")
         {
             return Pay(
                 card.CardNumber, card.ExpiredYear, card.ExpiredMonth, card.CVV, 
@@ -32,14 +27,16 @@ namespace Payment.Stripe
         {
             try
             {
-                CreditCardOptions stripeOption = new CreditCardOptions();
-                stripeOption.Number = CardNo;
-                stripeOption.ExpYear = Convert.ToInt64(ExpiredYear);
-                stripeOption.ExpMonth = Convert.ToInt64(ExpiredMonth);
-                stripeOption.Cvc = CVV;
-
-                TokenCreateOptions stripeCard = new TokenCreateOptions();
-                stripeCard.Card = stripeOption;
+                TokenCreateOptions stripeCard = new TokenCreateOptions 
+                {
+                    Card = new TokenCardOptions
+                    {
+                        Number = CardNo,
+                        ExpMonth = Convert.ToInt64(ExpiredYear),
+                        ExpYear = Convert.ToInt64(ExpiredMonth),
+                        Cvc = CVV,
+                    },
+                };
 
                 TokenService service = new TokenService();
                 Token newToken = service.Create(stripeCard);
