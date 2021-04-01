@@ -32,8 +32,8 @@ namespace StripePayment
                     Card = new TokenCardOptions
                     {
                         Number = CardNo,
-                        ExpMonth = Convert.ToInt64(ExpiredYear),
-                        ExpYear = Convert.ToInt64(ExpiredMonth),
+                        ExpMonth = Convert.ToInt64(ExpiredMonth),
+                        ExpYear = Convert.ToInt64(ExpiredYear),
                         Cvc = CVV,
                     },
                 };
