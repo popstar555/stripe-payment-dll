@@ -142,5 +142,50 @@ namespace StripePayment
                 return false;
             }
         }
+
+        public string GeneratePayNowLink(
+            string customerEmail,
+            decimal amountToPay,
+            string currency,
+            string description = "")
+        {
+            try {
+                CustomerCreateOptions customerInfo = new CustomerCreateOptions
+                {
+                    Email = customerEmail,
+                    PaymentMethod = "card",
+                };
+                var customerService = new CustomerService();
+                var customer = customerService.Create(customerInfo);
+
+                var invoiceItemOption = new InvoiceItemCreateOptions
+                {
+                    Customer = customer.Id,
+                    Amount = Convert.ToInt32(amountToPay * 100),
+                    Currency = currency,
+                };
+                var invoiceItemService = new InvoiceItemService();
+                var invoiceItem = invoiceItemService.Create(invoiceItemOption);
+
+                var invoiceOptions = new InvoiceCreateOptions
+                {
+                    Customer = customer.Id,
+                    CollectionMethod = "send_invoice",
+                    DaysUntilDue = 30,
+                    Description = description
+                };
+
+                var service = new InvoiceService();
+                var invoice = service.Create(invoiceOptions);
+                invoice = service.FinalizeInvoice(invoice.Id);
+                invoice = service.SendInvoice(invoice.Id);
+                return invoice.HostedInvoiceUrl;
+            }
+            catch(Exception e)
+            {
+                Console.WriteLine(e);
+                return null;
+            }
+        }
     }
 }
