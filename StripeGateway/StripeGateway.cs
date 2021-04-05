@@ -147,7 +147,8 @@ namespace StripePayment
             string customerEmail,
             decimal amountToPay,
             string currency,
-            string description = "")
+            string description = "",
+            bool sendInvoice=false)
         {
             try {
                 CustomerCreateOptions customerInfo = new CustomerCreateOptions
@@ -178,7 +179,8 @@ namespace StripePayment
                 var service = new InvoiceService();
                 var invoice = service.Create(invoiceOptions);
                 invoice = service.FinalizeInvoice(invoice.Id);
-                invoice = service.SendInvoice(invoice.Id);
+                if(sendInvoice)
+                   invoice = service.SendInvoice(invoice.Id);
                 return invoice.HostedInvoiceUrl;
             }
             catch(Exception e)
