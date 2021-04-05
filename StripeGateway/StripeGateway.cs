@@ -153,7 +153,7 @@ namespace StripePayment
                 CustomerCreateOptions customerInfo = new CustomerCreateOptions
                 {
                     Email = customerEmail,
-                    PaymentMethod = "card",
+                    //PaymentMethod = "card",
                 };
                 var customerService = new CustomerService();
                 var customer = customerService.Create(customerInfo);
