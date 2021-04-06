@@ -61,6 +61,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="InvoiceInfo.cs" />
     <Compile Include="StripeCard.cs" />
     <Compile Include="Money.cs" />
     <Compile Include="StripeGateway.cs" />

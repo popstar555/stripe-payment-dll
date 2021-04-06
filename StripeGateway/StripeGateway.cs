@@ -143,12 +143,11 @@ namespace StripePayment
             }
         }
 
-        public string GeneratePayNowLink(
+        public InvoiceInfo GeneratePayNowLink(
             string customerEmail,
             decimal amountToPay,
             string currency,
-            string description = "",
-            bool sendInvoice=false)
+            string description = "")
         {
             try {
                 CustomerCreateOptions customerInfo = new CustomerCreateOptions
@@ -179,15 +178,76 @@ namespace StripePayment
                 var service = new InvoiceService();
                 var invoice = service.Create(invoiceOptions);
                 invoice = service.FinalizeInvoice(invoice.Id);
-                if(sendInvoice)
-                   invoice = service.SendInvoice(invoice.Id);
-                return invoice.HostedInvoiceUrl;
+
+                var result = new InvoiceInfo
+                {
+                    Url = invoice.HostedInvoiceUrl,
+                    Id = invoice.Id
+                };
+                return result;
             }
             catch(Exception e)
             {
                 Console.WriteLine(e);
                 return null;
             }
+        }
+
+
+        public string SendInvoice(
+            string customerEmail,
+            decimal amountToPay,
+            string currency,
+            string description = "",
+            bool sendInvoice = false)
+        {
+            try
+            {
+                CustomerCreateOptions customerInfo = new CustomerCreateOptions
+                {
+                    Email = customerEmail,
+                    //PaymentMethod = "card",
+                };
+                var customerService = new CustomerService();
+                var customer = customerService.Create(customerInfo);
+
+                var invoiceItemOption = new InvoiceItemCreateOptions
+                {
+                    Customer = customer.Id,
+                    Amount = Convert.ToInt32(amountToPay * 100),
+                    Currency = currency,
+                };
+                var invoiceItemService = new InvoiceItemService();
+                var invoiceItem = invoiceItemService.Create(invoiceItemOption);
+
+                var invoiceOptions = new InvoiceCreateOptions
+                {
+                    Customer = customer.Id,
+                    CollectionMethod = "send_invoice",
+                    DaysUntilDue = 30,
+                    Description = description
+                };
+
+                var service = new InvoiceService();
+                var invoice = service.Create(invoiceOptions);
+                invoice = service.FinalizeInvoice(invoice.Id);
+                if (sendInvoice)
+                    invoice = service.SendInvoice(invoice.Id);
+
+                return invoice.Id;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                return null;
+            }
+        }
+
+        public bool CheckInvoicePayment(string invoiceId)
+        {
+            var service = new InvoiceService();
+            var invoice = service.Get(invoiceId);
+            return invoice.Status == "paid";
         }
     }
 }
