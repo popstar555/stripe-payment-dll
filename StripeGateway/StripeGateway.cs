@@ -149,7 +149,8 @@ namespace StripePayment
             string currency,
             string description = "")
         {
-            try {
+            try
+            {
                 CustomerCreateOptions customerInfo = new CustomerCreateOptions
                 {
                     Email = customerEmail,
@@ -177,11 +178,24 @@ namespace StripePayment
 
                 var service = new InvoiceService();
                 var invoice = service.Create(invoiceOptions);
-                var finalizeOption = new InvoiceFinalizeOptions
+
+                invoice = service.FinalizeInvoice(invoice.Id);
+
+                try
                 {
-                    AutoAdvance = true
-                };
-                invoice = service.FinalizeInvoice(invoice.Id, finalizeOption);
+                    var paymentIntentService = new PaymentIntentService();
+
+                    var paymentIntent = paymentIntentService.Get(invoice.PaymentIntentId);
+                    var paymentIntentUpdateOptions = new PaymentIntentUpdateOptions
+                    {
+                        Description = description
+                    };
+                    paymentIntentService.Update(paymentIntent.Id, paymentIntentUpdateOptions);
+                }
+                catch (Exception)
+                {
+                    //continue
+                }
 
                 var result = new InvoiceInfo
                 {
@@ -190,7 +204,7 @@ namespace StripePayment
                 };
                 return result;
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 Console.WriteLine(e);
                 return null;
@@ -229,12 +243,30 @@ namespace StripePayment
                     Customer = customer.Id,
                     CollectionMethod = "send_invoice",
                     DaysUntilDue = 30,
-                    Description = description
+                    Description = description,
+                    AutoAdvance = true
                 };
 
                 var service = new InvoiceService();
                 var invoice = service.Create(invoiceOptions);
                 invoice = service.FinalizeInvoice(invoice.Id);
+
+                try
+                {
+                    var paymentIntentService = new PaymentIntentService();
+
+                    var paymentIntent = paymentIntentService.Get(invoice.PaymentIntentId);
+                    var paymentIntentUpdateOptions = new PaymentIntentUpdateOptions
+                    {
+                        Description = description
+                    };
+                    paymentIntentService.Update(paymentIntent.Id, paymentIntentUpdateOptions);
+                }
+                catch (Exception)
+                {
+                    //continue
+                }
+
                 if (sendInvoice)
                     invoice = service.SendInvoice(invoice.Id);
 
