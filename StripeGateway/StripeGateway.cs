@@ -177,7 +177,11 @@ namespace StripePayment
 
                 var service = new InvoiceService();
                 var invoice = service.Create(invoiceOptions);
-                invoice = service.FinalizeInvoice(invoice.Id);
+                var finalizeOption = new InvoiceFinalizeOptions
+                {
+                    AutoAdvance = true
+                };
+                invoice = service.FinalizeInvoice(invoice.Id, finalizeOption);
 
                 var result = new InvoiceInfo
                 {
@@ -199,7 +203,7 @@ namespace StripePayment
             decimal amountToPay,
             string currency,
             string description = "",
-            bool sendInvoice = false)
+            bool sendInvoice = true)
         {
             try
             {
