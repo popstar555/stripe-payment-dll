@@ -1,5 +1,6 @@
 ﻿
 using System;
+using System.Globalization;
 
 namespace StripePayemnt
 {
@@ -28,15 +29,17 @@ namespace StripePayemnt
         public string[] ToArray()
         {
             string[] record = new string[17];
+            CultureInfo ci = new CultureInfo("en-us");
+
             record[0] = Id;
             record[1] = "\""+Description+"\"";
             record[2] = Created.ToString("yyyy-MM-dd HH:mm");
-            record[3] = Amount.ToString("0.00");
-            record[4] = AmountRefunded.ToString("0.00");
+            record[3] = "\""+Amount.ToString("0.00", ci) + "\"";
+            record[4] = "\"" + AmountRefunded.ToString("0.00", ci) + "\"";
             record[5] = Currency;
-            record[6] = ConvertedAmountRefunded.ToString("0.00");
-            record[7] = Fee.ToString("0.00");
-            record[8] = Tax.ToString("0.00");
+            record[6] = "\"" + ConvertedAmountRefunded.ToString("0.00", ci) + "\"";
+            record[7] = "\"" + Fee.ToString("0.00", ci) + "\"";
+            record[8] = "\"" + Tax.ToString("0.00", ci) + "\"";
             record[9] = ConvertedCurrency;
             record[10] = Status;
             record[11] = "\""+StatementDescriptor+ "\"";
