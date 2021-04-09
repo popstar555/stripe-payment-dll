@@ -348,7 +348,7 @@ namespace StripePayment
                     try
                     {
                         c.BalanceTransaction = transactionService.Get(c.BalanceTransactionId);
-                        payment.ConvertedAmountRefunded = Convert.ToDecimal(c.BalanceTransaction.Amount);
+                        payment.ConvertedAmountRefunded = Convert.ToDecimal(c.BalanceTransaction.Amount)/100;
                         payment.Fee = Convert.ToDecimal(c.BalanceTransaction.Fee) / 100;
                         payment.ConvertedCurrency = c.BalanceTransaction.Currency;
                     }

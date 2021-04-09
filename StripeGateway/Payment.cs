@@ -34,12 +34,12 @@ namespace StripePayemnt
             record[0] = Id;
             record[1] = "\""+Description+"\"";
             record[2] = Created.ToString("yyyy-MM-dd HH:mm");
-            record[3] = "\""+Amount.ToString("0.00", ci) + "\"";
-            record[4] = "\"" + AmountRefunded.ToString("0.00", ci) + "\"";
+            record[3] = Amount.ToString("0.00", ci);
+            record[4] = AmountRefunded.ToString("0.00", ci);
             record[5] = Currency;
-            record[6] = "\"" + ConvertedAmountRefunded.ToString("0.00", ci) + "\"";
-            record[7] = "\"" + Fee.ToString("0.00", ci) + "\"";
-            record[8] = "\"" + Tax.ToString("0.00", ci) + "\"";
+            record[6] = ConvertedAmountRefunded.ToString("0.00", ci);
+            record[7] = Fee.ToString("0.00", ci);
+            record[8] = Tax.ToString("0.00", ci);
             record[9] = ConvertedCurrency;
             record[10] = Status;
             record[11] = "\""+StatementDescriptor+ "\"";
