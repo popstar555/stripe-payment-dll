@@ -62,6 +62,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="InvoiceInfo.cs" />
+    <Compile Include="Payment.cs" />
     <Compile Include="StripeCard.cs" />
     <Compile Include="Money.cs" />
     <Compile Include="StripeGateway.cs" />

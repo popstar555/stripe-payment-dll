@@ -1,5 +1,8 @@
 ﻿using Stripe;
+using StripePayemnt;
 using System;
+using System.Collections.Generic;
+using System.Text;
 
 namespace StripePayment
 {
@@ -284,6 +287,158 @@ namespace StripePayment
             var service = new InvoiceService();
             var invoice = service.Get(invoiceId);
             return invoice.Status == "paid";
+        }
+
+        private List<Payment> ExportPayment(DateTime start)
+        {
+            var range = new DateRangeOptions
+            {
+                GreaterThanOrEqual = start,
+            };
+            return _ExportPayment(range);
+        }
+        private List<Payment> ExportPayment(DateTime start, DateTime end)
+        {
+            var range = new DateRangeOptions
+            {
+                GreaterThanOrEqual = start,
+                LessThanOrEqual = end
+            };
+            return _ExportPayment(range);
+        }
+
+        private List<Payment> _ExportPayment(DateRangeOptions range)
+        {
+            var payments = new List<Payment>();
+
+            try
+            {
+                var options = new ChargeListOptions
+                {
+                    Limit = 100,
+                    Created = range,
+                };
+                var chargeService = new ChargeService();
+                var transactionService = new BalanceTransactionService();
+                var customerService = new CustomerService();
+                var invoiceService = new InvoiceService();
+
+                StripeList<Charge> charges = chargeService.List(options);
+
+                for (int i = 0; i < charges.Data.Count; i++)
+                {
+                    var c = charges.Data[i];
+
+                    var payment = new Payment
+                    {
+                        Id = c.Id,
+                        Description = c.Description,
+                        Created = c.Created,
+                        Amount = Convert.ToDecimal(c.Amount) / 100,
+                        AmountRefunded = Convert.ToDecimal(c.AmountRefunded) / 100,
+                        Currency = c.Currency,
+                        Tax = 0,
+                        Status = c.Status,
+                        StatementDescriptor = c.StatementDescriptor,
+                        CustomerId = c.CustomerId,
+                        Captured = c.Captured,
+                        InvoiceId = c.InvoiceId
+                    };
+
+                    try
+                    {
+                        c.BalanceTransaction = transactionService.Get(c.BalanceTransactionId);
+                        payment.ConvertedAmountRefunded = c.BalanceTransaction.Amount;
+                        payment.Fee = Convert.ToDecimal(c.BalanceTransaction.Fee) / 100;
+                        payment.ConvertedCurrency = c.BalanceTransaction.Currency;
+                    }
+                    catch (Exception) { }
+
+                    try
+                    {
+                        c.Customer = customerService.Get(c.CustomerId);
+                        payment.CustomerDescription = c.Customer.Description;
+                        payment.CustomerEmail = c.Customer.Email;
+
+                    }
+                    catch (Exception) { }
+
+
+                    payments.Add(payment);
+                }
+            }
+            catch (Exception e) { }
+            
+            return payments;
+        }
+
+        public List<Payment> ExportPaymentToday()
+        {
+            var today = DateTime.Today;
+            var start = new DateTime(today.Year, today.Month, today.Day, 0, 0, 0);
+            return ExportPayment(start);
+        }
+
+        public List<Payment> ExportPaymentCurrentMonth()
+        {
+            var today = DateTime.Today;
+            var start = new DateTime(today.Year, today.Month, 1, 0, 0, 0);
+            return ExportPayment(start);
+        }
+        public List<Payment> ExportPaymentLast7days()
+        {
+            var today = DateTime.Today;
+            var startDate = today.AddDays(-7);
+            var start = new DateTime(startDate.Year, startDate.Month, startDate.Day, 0, 0, 0);
+            return ExportPayment(start);
+        }
+        public List<Payment> ExportPaymentCustomRange(DateTime start, DateTime end)
+        {
+            return ExportPayment(start, end);
+        }
+
+        public bool WritePaymentToCSV(List<Payment> payments, string filePath)
+        {
+            string[] header =
+            {
+                "id",
+                "Description",
+                //"Seller Message",
+                "Created",
+                "Amount",
+                "Amount Refunded Currency",
+                "Converted Amount",
+                "Converted Amount Refunded",
+                "Fee",
+                "Tax",
+                "Converted Currency",
+                "Status",
+                "Statement Descriptor",
+                "Customer ID",
+                "Customer Description",
+                "Customer Email",
+                "Captured",
+                "Invoice ID"
+            };
+
+            var csv = new StringBuilder();
+            csv.AppendLine(String.Join(",", header));
+            
+            for(int i=0; i<payments.Count; i++)
+            {
+                string[] record = payments[i].ToArray();
+                csv.AppendLine(String.Join(",", record));
+            }
+
+            try
+            {
+                System.IO.File.WriteAllText(filePath, csv.ToString());
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+            return true;
         }
     }
 }
