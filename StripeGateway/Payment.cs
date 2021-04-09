@@ -29,7 +29,7 @@ namespace StripePayemnt
         {
             string[] record = new string[17];
             record[0] = Id;
-            record[1] = Description;
+            record[1] = "\""+Description+"\"";
             record[2] = Created.ToString("yyyy-MM-dd HH:mm");
             record[3] = Amount.ToString("0.00");
             record[4] = AmountRefunded.ToString("0.00");
@@ -39,9 +39,9 @@ namespace StripePayemnt
             record[8] = Tax.ToString("0.00");
             record[9] = ConvertedCurrency;
             record[10] = Status;
-            record[11] = StatementDescriptor;
+            record[11] = "\""+StatementDescriptor+ "\"";
             record[12] = CustomerId;
-            record[13] = CustomerDescription;
+            record[13] = "\""+CustomerDescription+ "\"";
             record[14] = CustomerEmail;
             record[15] = Captured.ToString();
             record[16] = InvoiceId;
