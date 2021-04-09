@@ -122,11 +122,11 @@ namespace StripePayemnt
         }
         public string CardId { get; set; }
         public string InvoiceId { get; set; }
-        //public string Transfer { get; set; }
+        public string Transfer { get; set; }
 
         public string[] ToArray()
         {
-            string[] record = new string[19];
+            string[] record = new string[20];
             CultureInfo ci = new CultureInfo("en-us");
 
             record[0] = Id;
@@ -148,7 +148,7 @@ namespace StripePayemnt
             record[16] = _bCaptured ? Captured.ToString():"";
             record[17] = CardId;
             record[18] = InvoiceId;
-            //record[18] = Transfer;
+            record[19] = Transfer;
 
             return record;
         }
@@ -162,6 +162,14 @@ namespace StripePayemnt
             else if(status== "processing")
             {
                 return "Processing";
+            }
+            else if(status == "pending")
+            {
+                return "Pending";
+            }
+            else if(status == "failed")
+            {
+                return "Failed";
             }
             else
             {
