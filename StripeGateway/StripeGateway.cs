@@ -313,57 +313,72 @@ namespace StripePayment
 
             try
             {
-                var options = new ChargeListOptions
+                var options = new PaymentIntentListOptions
                 {
                     Limit = 100,
                     Created = range,
                 };
-                var chargeService = new ChargeService();
+                var paymentIntentService = new PaymentIntentService();
                 var transactionService = new BalanceTransactionService();
                 var customerService = new CustomerService();
-                var invoiceService = new InvoiceService();
 
-                StripeList<Charge> charges = chargeService.List(options);
+                StripeList<PaymentIntent> pis = paymentIntentService.List(options);
 
-                for (int i = 0; i < charges.Data.Count; i++)
+                for (int i = 0; i < pis.Data.Count; i++)
                 {
-                    var c = charges.Data[i];
+                    var pi = pis.Data[i];
 
-                    var payment = new Payment
+                    var payment = new Payment()
                     {
-                        Id = c.Id,
-                        Description = c.Description,
-                        Created = c.Created,
-                        Amount = Convert.ToDecimal(c.Amount) / 100,
-                        AmountRefunded = Convert.ToDecimal(c.AmountRefunded) / 100,
-                        Currency = c.Currency,
-                        Tax = 0,
-                        Status = c.Status,
-                        StatementDescriptor = c.StatementDescriptor,
-                        CustomerId = c.CustomerId,
-                        Captured = c.Captured,
-                        InvoiceId = c.InvoiceId
+                        Description = pi.Description,
+                        Created = pi.Created,
+                        Amount = Convert.ToDecimal(pi.Amount) / 100,
+                        Currency = pi.Currency,
+                        Status = pi.Status,
+                        StatementDescriptor = pi.StatementDescriptor,
+                        CustomerId = pi.CustomerId,
+                        CardId = pi.PaymentMethodId,
+                        InvoiceId = pi.InvoiceId
                     };
 
+                    if (pi.Charges.Data.Count > 0)
+                    {
+                        var charge = pi.Charges.Data[0];
+                        try
+                        {
+                            charge.BalanceTransaction = transactionService.Get(charge.BalanceTransactionId);
+                            payment.Id = charge.Id;
+                            payment.ConvertedAmount = Convert.ToDecimal(charge.BalanceTransaction.Amount)/100;
+                            payment.AmountRefunded = Convert.ToDecimal(charge.AmountRefunded)/100;
+                            payment.Fee = Convert.ToDecimal(charge.BalanceTransaction.Fee)/100;
+                            payment.ConvertedCurrency = charge.BalanceTransaction.Currency;
+                            payment.Tax = 0;
+                            payment.Captured = charge.Captured;
+                            try
+                            {
+                                if (charge.Refunds.Data.Count > 0)
+                                {
+                                    var refundTx = transactionService.Get(charge.Refunds.Data[0].BalanceTransactionId);
+                                    payment.ConvertedAmountRefunded = Convert.ToDecimal(refundTx.Amount)/100;
+                                }
+                            }
+                            catch (Exception) { }
+                        }
+                        catch (Exception) { }
+                        
+                    }
+
                     try
                     {
-                        c.BalanceTransaction = transactionService.Get(c.BalanceTransactionId);
-                        payment.ConvertedAmountRefunded = Convert.ToDecimal(c.BalanceTransaction.Amount)/100;
-                        payment.Fee = Convert.ToDecimal(c.BalanceTransaction.Fee) / 100;
-                        payment.ConvertedCurrency = c.BalanceTransaction.Currency;
+                        pi.Customer = customerService.Get(pi.CustomerId);
+                        payment.CustomerDescription = pi.Customer.Description;
+                        payment.CustomerEmail = pi.Customer.Email;
+
                     }
                     catch (Exception) { }
 
-                    try
-                    {
-                        c.Customer = customerService.Get(c.CustomerId);
-                        payment.CustomerDescription = c.Customer.Description;
-                        payment.CustomerEmail = c.Customer.Email;
 
-                    }
-                    catch (Exception) { }
-
-
+                    payment.Description = pi.Description;
                     payments.Add(payment);
                 }
             }
@@ -403,10 +418,10 @@ namespace StripePayment
             {
                 "id",
                 "Description",
-                //"Seller Message",
                 "Created",
                 "Amount",
-                "Amount Refunded Currency",
+                "Amount Refunded",
+                "Curency",
                 "Converted Amount",
                 "Converted Amount Refunded",
                 "Fee",
@@ -418,7 +433,9 @@ namespace StripePayment
                 "Customer Description",
                 "Customer Email",
                 "Captured",
-                "Invoice ID"
+                "Card ID",
+                "Invoice ID",
+                "Transfer"
             };
 
             var csv = new StringBuilder();
