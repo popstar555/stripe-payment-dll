@@ -35,20 +35,20 @@ DLL for Stripe Payment
 >        string InvoiceId = stripe.SendInvoice("test@stripe.com", 5, "usd", "Request to pay for service");
 >        bPaid = stripe.CheckInvoicePayment(InvoiceId);
 ### Export Payment Data
-        Payment payments;
-        // Export payments for today
-        payments = stripe.ExportPaymentToday();
-
-        // Export payments for current month
-        payments = stripe.ExportPaymentCurrentMonth();
-
-        // Export payments for last 7 days
-        payments = stripe.ExportPaymentLast7days();
-
-        // Export payments for custom range
-        DateTime start = new DateTime(2021, 3, 21);              // from 3/212021 00:00:00
-        DateTime end = new DateTime(2021, 4, 6, 17, 30, 0)      // to 4/6/2021 17:30:00
-        payments = ExportPaymentCustomRange(start, end);
+>        Payment payments;
+>        // Export payments for today
+>        payments = stripe.ExportPaymentToday();
+>
+>        // Export payments for current month
+>        payments = stripe.ExportPaymentCurrentMonth();
+>
+>        // Export payments for last 7 days
+>        payments = stripe.ExportPaymentLast7days();
+>
+>        // Export payments for custom range
+>        DateTime start = new DateTime(2021, 3, 21);              // from 3/212021 00:00:00
+>        DateTime end = new DateTime(2021, 4, 6, 17, 30, 0)      // to 4/6/2021 17:30:00
+>        payments = ExportPaymentCustomRange(start, end);
 
 ### Write payment into CSV file
-        bool result = stripe.WritePaymentToCSV(payments, "E:\\pay.csv");
+>        bool result = stripe.WritePaymentToCSV(payments, "E:\\pay.csv");
